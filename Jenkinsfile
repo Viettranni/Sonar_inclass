@@ -44,12 +44,11 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Multi-Platform Docker Image') {
             steps {
                 script {
-                    // Multi-platform build for docker playground since my OS is not compatible with labs docker
                     sh """
-                        docker buildx build --platform linux/amd64,linux/arm64 -t ${env.DOCKER_IMAGE} .
+                        docker buildx build --platform linux/amd64,linux/arm64 -t ${env.DOCKER_IMAGE}:${env.BUILD_ID} --push .
                     """
                 }
             }
@@ -60,7 +59,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'viettranni', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${env.DOCKER_IMAGE}
+                        docker push ${env.DOCKER_IMAGE}:${env.BUILD_ID}
                     """
                 }
             }
