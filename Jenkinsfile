@@ -3,13 +3,13 @@ pipeline {
 
     environment {
         SONARQUBE_SERVER = 'SonarQubeServer'  // The name of the SonarQube server configured in Jenkins
-        SONAR_TOKEN = 'sqa_902ad64d0703370fee676a4b9c578c84cc550199' // Store the token securely
+        SONAR_TOKEN = 'squ_784de978a4b09478564e8ee8fa3aa6101d289010' // Store the token securely
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/ADirin/sep2_week5_inclass_s2.git'
+                git branch: 'main', url: 'https://github.com/Viettranni/Sonar_inclass.git'
             }
         }
 
@@ -22,7 +22,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
-                    bat """
+                    sh """
                         sonar-scanner ^
                         -Dsonar.projectKey=devops-demo ^
                         -Dsonar.sources=src ^
