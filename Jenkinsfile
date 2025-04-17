@@ -24,7 +24,7 @@ pipeline {
                 withSonarQubeEnv('SonarQubeServer') {
                     sh '''
                         /Applications/sonar-scanner-7.0.2.4839-macosx-aarch64/bin/sonar-scanner \
-                        -Dsonar.projectKey=MyProject \
+                        -Dsonar.projectKey=myproject \
                         -Dsonar.sources=src \
                         -Dsonar.host.url=http://localhost:9000 \
                         -Dsonar.login=$SONAR_TOKEN
