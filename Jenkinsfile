@@ -35,10 +35,22 @@ pipeline {
             }
         }
 
+        stage('Set up Docker Buildx') {
+            steps {
+                script {
+                    sh 'docker buildx create --use || true'
+                    sh 'docker buildx inspect --bootstrap'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${env.DOCKER_IMAGE}")
+                    // Multi-platform build for docker playground since my OS is not compatible with labs docker
+                    sh """
+                        docker buildx build --platform linux/amd64,linux/arm64 -t ${env.DOCKER_IMAGE} .
+                    """
                 }
             }
         }
