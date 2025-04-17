@@ -4,8 +4,8 @@ pipeline {
     environment {
         SONARQUBE_SERVER = 'SonarQubeServer'
         SONAR_TOKEN = credentials('sonar-token') // store this securely in Jenkins Credentials
-        DOCKER_IMAGE = 'viettranni/sonarqube' // change to your Docker Hub repo
-        DOCKER_TAG = 'latest_v2'
+        DOCKER_IMAGE = 'viettranni/sonarqube2' // change to your Docker Hub repo
+        DOCKER_TAG = 'latest_v1'
     }
 
     stages {
