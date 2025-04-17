@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_SERVER = 'SonarQubeServer'  // The name of the SonarQube server configured in Jenkins
-        SONAR_TOKEN = 'squ_784de978a4b09478564e8ee8fa3aa6101d289010' // Store the token securely
+        SONARQUBE_SERVER = 'SonarQubeServer'
+        SONAR_TOKEN = credentials('sonar-token') // store this securely in Jenkins Credentials
+        DOCKER_IMAGE = 'viettranni/sonarqube' // change to your Docker Hub repo
     }
 
     stages {
@@ -15,7 +16,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
@@ -23,12 +24,32 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQubeServer') {
                     sh '''
-                        /Applications/sonar-scanner-7.0.2.4839-macosx-aarch64/bin/sonar-scanner \
-                        -Dsonar.projectKey=myproject \
-                        -Dsonar.sources=src \
-                        -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.login=$SONAR_TOKEN
+                        export PATH=$PATH:/Applications/sonar-scanner-7.0.2.4839-macosx-aarch64/bin
+                        sonar-scanner \
+                          -Dsonar.projectKey=myproject \
+                          -Dsonar.sources=src \
+                          -Dsonar.host.url=http://localhost:9000 \
+                          -Dsonar.login=$SONAR_TOKEN
                     '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${env.DOCKER_IMAGE}")
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'viettranni', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${env.DOCKER_IMAGE}
+                    """
                 }
             }
         }
