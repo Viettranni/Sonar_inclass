@@ -5,6 +5,7 @@ pipeline {
         SONARQUBE_SERVER = 'SonarQubeServer'
         SONAR_TOKEN = credentials('sonar-token') // store this securely in Jenkins Credentials
         DOCKER_IMAGE = 'viettranni/sonarqube' // change to your Docker Hub repo
+        DOCKER_TAG = 'latest_v2'
     }
 
     stages {
@@ -48,7 +49,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker buildx build --platform linux/amd64,linux/arm64 -t ${env.DOCKER_IMAGE}:${env.BUILD_ID} --push .
+                        docker buildx build --platform linux/amd64,linux/arm64 -t ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} --push .
                     """
                 }
             }
@@ -59,7 +60,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'viettranni', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${env.DOCKER_IMAGE}:${env.BUILD_ID}
+                        docker push ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}
                     """
                 }
             }
