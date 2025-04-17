@@ -4,7 +4,7 @@ pipeline {
     environment {
         SONARQUBE_SERVER = 'SonarQubeServer'
         SONAR_TOKEN = credentials('sonar-token') // store this securely in Jenkins Credentials
-        DOCKER_IMAGE = 'viettranni/sonarqube3' // change to your Docker Hub repo
+        DOCKER_IMAGE = 'viettranni/sonarqube' // change to your Docker Hub repo
     }
 
     stages {
@@ -47,7 +47,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Multi-platform build for docker playground since my OS is not compatible with labs docker.
+                    // Multi-platform build for docker playground since my OS is not compatible with labs docker
                     sh """
                         docker buildx build --platform linux/amd64,linux/arm64 -t ${env.DOCKER_IMAGE} .
                     """
