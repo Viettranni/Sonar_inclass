@@ -2,7 +2,7 @@
 FROM maven:latest
 
 # Set metadata information
-LABEL authors="amirdi"
+LABEL authors="viettran"
 
 # Set the working directory in the container
 WORKDIR /app
